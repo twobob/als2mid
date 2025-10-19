@@ -2,9 +2,19 @@
 
 Ableton Project File to MIDI exporter
 
+**Current Version: v1.0.0** | [Download Releases](https://github.com/twobob/als2mid/releases)
+
 Converts Ableton Live project files (.als) and zipped projects to standard MIDI files, preserving notes, automation (pitch bend, modulation, filter cutoff), and multi-track structure.
 
 ![ALS2MID UI](images/ScreenshotOfUI.png)
+
+## Download
+
+**Windows Executables (No Python Required):**
+- [als2mid-console.exe](https://github.com/twobob/als2mid/releases/latest) - Command-line version
+- [als2mid-gui.exe](https://github.com/twobob/als2mid/releases/latest) - GUI version
+
+**Or use Python source (cross-platform):**
 
 ## Features
 
@@ -23,14 +33,34 @@ Converts Ableton Live project files (.als) and zipped projects to standard MIDI 
 
 ## Installation
 
+### Option 1: Download Pre-built Executables (Windows)
+Download from [Releases](https://github.com/twobob/als2mid/releases/latest) - no installation needed!
+
+### Option 2: Use Python Source (All Platforms)
 ```bash
-git clone https://github.com/yourusername/als2mid.git
+git clone https://github.com/twobob/als2mid.git
 cd als2mid
 ```
 
 ## Usage
 
-### GUI (Optional)
+### Windows Executable Usage
+
+**GUI Version:**
+- Double-click `als2mid-gui.exe`
+- Browse for your .als or .zip file
+- Choose output location (or use auto-generated name)
+- Click "Convert to MIDI"
+
+**Console Version:**
+```cmd
+als2mid-console.exe myproject.als
+als2mid-console.exe myproject.als -o output.mid
+```
+
+### Python Script Usage
+
+#### GUI (Optional)
 
 For a simple graphical interface, run:
 ```bash
