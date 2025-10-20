@@ -156,7 +156,7 @@ Device-specific automation (VST/plugin parameters) is now automatically mapped t
 
 - Original script by MrBlaschke
 - Usability enhancements by rs2000
-- Console version for cross-platform support by twobob
+- Console/tkGUI X-platform support, Multi-track, Multi-CC, V11, V12 updates by twobob
 
 ## License
 
