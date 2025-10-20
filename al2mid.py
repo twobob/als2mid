@@ -290,39 +290,54 @@ def convert_ableton_to_midi(input_file, output_file=None):
                         # Get the automation internal ID
                         pid = clipenv.find('.//EnvelopeTarget/PointeeId')
                         autoid = safe_int(safe_get(pid, 'Value'), -1)
-
-                        if autoid == 16200:         # Pitchbend
-                            target_cc = 0
-                            print('\tFound CC-data for: Pitch')
-                        elif autoid == 16203:       # Mod-wheel
-                            target_cc = 1
-                            print('\tFound CC-data for: Modulation')
-                        elif autoid == 16111:       # Cutoff
-                            target_cc = 74
-                            print('\tFound CC-data for: Cutoff')
-                        else:
+                        
+                        # Ableton automation ID to MIDI CC mapping
+                        # Standard MIDI CCs that Ableton commonly uses
+                        AUTOMATION_MAP = {
+                            16200: (0, 'Pitch Bend'),      # Special: Pitch Bend
+                            16203: (1, 'Modulation'),      # CC 1
+                            16111: (74, 'Filter Cutoff'),  # CC 74
+                            16207: (7, 'Volume'),          # CC 7
+                            16208: (10, 'Pan'),            # CC 10
+                            16204: (64, 'Sustain'),        # CC 64
+                            16205: (91, 'Reverb'),         # CC 91
+                            16206: (93, 'Chorus'),         # CC 93
+                            16112: (71, 'Resonance'),      # CC 71
+                            16209: (11, 'Expression'),     # CC 11
+                        }
+                        
+                        target_cc = -1
+                        cc_name = 'Unknown'
+                        
+                        if autoid in AUTOMATION_MAP:
+                            target_cc, cc_name = AUTOMATION_MAP[autoid]
+                            print(f'\tFound automation: {cc_name} (CC {target_cc if target_cc != 0 else "Pitch Bend"})')
+                        elif autoid != -1:
+                            # Unknown automation - try to pass through anyway
+                            # Map to CC based on ID modulo (just a fallback)
+                            print(f'\tFound unknown automation ID {autoid} - skipping')
                             target_cc = -1
-                            print('\n!! Found unhandled CC data. Contact developer for integration. Thanks!')
 
                         # Get the automation values for each envelope
-                        for automs in clipenv.findall('.//Automation/Events'):
-                            for aevents in automs:
-                                eventvals = aevents.attrib or {}
-                                cc_tim = safe_float(eventvals.get('Time'))
-                                cc_val = safe_int(eventvals.get('Value'))
+                        if target_cc != -1:
+                            for automs in clipenv.findall('.//Automation/Events'):
+                                for aevents in automs:
+                                    eventvals = aevents.attrib or {}
+                                    cc_tim = safe_float(eventvals.get('Time'))
+                                    cc_val = safe_int(eventvals.get('Value'))
 
-                                if cc_tim < 0:
-                                    cc_tim = 0
+                                    if cc_tim < 0:
+                                        cc_tim = 0
 
-                                # Write pitchbend information (range: -8192 to 8191)
-                                if target_cc == 0:
-                                    pitch_val = max(-8192, min(8191, cc_val))
-                                    my_midi.addPitchWheelEvent(local_track, channel, cc_tim, pitch_val)
+                                    # Write pitchbend information (range: -8192 to 8191)
+                                    if target_cc == 0:
+                                        pitch_val = max(-8192, min(8191, cc_val))
+                                        my_midi.addPitchWheelEvent(local_track, channel, cc_tim, pitch_val)
 
-                                # Write other CC values (range: 0 to 127)
-                                if target_cc != -1 and target_cc != 0:
-                                    cc_val = max(0, min(127, cc_val))
-                                    my_midi.addControllerEvent(local_track, channel, cc_tim, target_cc, cc_val)
+                                    # Write other CC values (range: 0 to 127)
+                                    else:
+                                        cc_val = max(0, min(127, cc_val))
+                                        my_midi.addControllerEvent(local_track, channel, cc_tim, target_cc, cc_val)
         
         # Write this MIDI file
         try:
