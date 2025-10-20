@@ -2,10 +2,12 @@
 # Ableton MIDI clip zip export to MIDI file converter
 # Original script by MrBlaschke
 # Usability enhancements by rs2000
-# Console version - device agnostic
 # Dec 11, 2019, V.04
 #
-# Converted to console-based, cross-platform version
+# Converted to console-based, augmented cross-platform version  
+# v11 and v12 ableton support added  19/10/2005
+#
+# Console version - device agnostic
 
 import sys
 import os
@@ -16,9 +18,8 @@ import gzip
 import binascii
 import argparse
 
-# Import MIDIUtil - you'll need to install via: pip install MIDIUtil
+# Import MIDIUtil 
 from midiutil_v1_2_1 import TICKSPERQUARTERNOTE, MIDIFile
-
 
 def convert_ableton_to_midi(input_file, output_file=None):
     """
@@ -70,7 +71,7 @@ def convert_ableton_to_midi(input_file, output_file=None):
     if input_file.endswith(".zip") and have_zip:
         print("Importing ZIP archive...")
         with ZipFile(input_file, 'r') as ablezip:
-            # Filter out hidden files in "__MACOSX" directories
+            # Filter out hidden files in any "__MACOSX" directories
             list_of_files = ablezip.namelist()
             infile = None
             for elem in list_of_files:
@@ -99,7 +100,7 @@ def convert_ableton_to_midi(input_file, output_file=None):
         print("Error: Filetype not supported. Please provide .als or .zip file")
         sys.exit(1)
     
-    # Initialize MIDI parameters
+    # Initialise MIDI parameters
     track = 0
     channel = 0
     time = 0        # In beats
@@ -217,7 +218,7 @@ def convert_ableton_to_midi(input_file, output_file=None):
             # Process both session view clips AND arranger clips
             clips_to_process = []
             
-            # 1. Check Ableton 12 TakeLanes structure (newer format)
+            # Check Ableton 12 TakeLanes structure (newer format)
             take_lanes = miditrack.find('.//TakeLanes/TakeLanes')
             if take_lanes is not None:
                 for take_lane in take_lanes.findall('TakeLane'):
@@ -225,12 +226,12 @@ def convert_ableton_to_midi(input_file, output_file=None):
                     if clip_automation is not None:
                         clips_to_process.extend(clip_automation.findall('MidiClip'))
             
-            # 2. Check arranger timeline clips (Ableton 11 and earlier)
+            # Check arranger timeline clips (Ableton 11 and earlier)
             arranger = miditrack.find('.//MainSequencer/ClipTimeable/ArrangerAutomation/Events')
             if arranger is not None:
                 clips_to_process.extend(arranger.findall('MidiClip'))
             
-            # 3. Also check session view clip slots (for live performance clips - Ableton 11 and earlier)
+            # Also check session view clip slots (for live performance clips - Ableton 11 and earlier)
             for clipslot in miditrack.findall('.//MainSequencer/ClipSlotList/ClipSlot'):
                 for clip_value in clipslot.findall('.//ClipSlot/Value/MidiClip'):
                     clips_to_process.append(clip_value)
