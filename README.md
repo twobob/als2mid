@@ -167,4 +167,4 @@ Check https://github.com/MarkCWirt/MIDIUtil/blob/develop/License.txt for upstrea
 
 Tested with Ableton Live 11 and 12
 - **Ableton 11**: Full support for all clip structures
-- **Ableton 12**: Full support including new TakeLanes architecture
+- **Ableton 12**: Alpha support including new TakeLanes architecture
