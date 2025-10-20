@@ -2,7 +2,7 @@
 
 Ableton Project File to MIDI exporter
 
-**Current Version: v1.0.0** | [Download Releases](https://github.com/twobob/als2mid/releases)
+**Current Version: v1.0.1** | [Download Releases](https://github.com/twobob/als2mid/releases)
 
 Converts Ableton Live project files (.als) and zipped projects to standard MIDI files, preserving notes, automation (pitch bend, modulation, filter cutoff), and multi-track structure.
 
@@ -19,6 +19,7 @@ Converts Ableton Live project files (.als) and zipped projects to standard MIDI 
 ## Features
 
 - Extract MIDI from .als files (both plain and gzipped formats)
+- **Supports Ableton Live 11 and 12** (including new TakeLanes structure in v12)
 - Support for zipped Ableton projects
 - Preserves multi-track structure
 - Exports notes with velocity and duration
@@ -147,4 +148,6 @@ Check https://github.com/MarkCWirt/MIDIUtil/blob/develop/License.txt for upstrea
 
 ## Version?
 
-Tested with Ableton 11
+Tested with Ableton Live 11 and 12
+- **Ableton 11**: Full support for all clip structures
+- **Ableton 12**: Full support including new TakeLanes architecture

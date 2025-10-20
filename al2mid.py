@@ -152,7 +152,8 @@ def convert_ableton_to_midi(input_file, output_file=None):
     # Prepare the target MIDI file - format 1 (multi-track)
     # In format 1, MIDIFile automatically creates a tempo track (track 0)
     # and user tracks are indexed starting from 0 (which maps to file track 1)
-    my_midi = MIDIFile(num_tracks, removeDuplicates=True, deinterleave=True,
+    # NOTE: deinterleave=False to avoid library bugs with complex note patterns
+    my_midi = MIDIFile(num_tracks, removeDuplicates=True, deinterleave=False,
                       adjust_origin=False, file_format=1, 
                       ticks_per_quarternote=TICKSPERQUARTERNOTE)
     
@@ -178,12 +179,20 @@ def convert_ableton_to_midi(input_file, output_file=None):
         # Process both session view clips AND arranger clips
         clips_to_process = []
         
-        # 1. Check arranger timeline clips first
+        # 1. Check Ableton 12 TakeLanes structure (newer format)
+        take_lanes = miditrack.find('.//TakeLanes/TakeLanes')
+        if take_lanes is not None:
+            for take_lane in take_lanes.findall('TakeLane'):
+                clip_automation = take_lane.find('ClipAutomation/Events')
+                if clip_automation is not None:
+                    clips_to_process.extend(clip_automation.findall('MidiClip'))
+        
+        # 2. Check arranger timeline clips (Ableton 11 and earlier)
         arranger = miditrack.find('.//MainSequencer/ClipTimeable/ArrangerAutomation/Events')
         if arranger is not None:
             clips_to_process.extend(arranger.findall('MidiClip'))
         
-        # 2. Also check session view clip slots (for live performance clips)
+        # 3. Also check session view clip slots (for live performance clips - Ableton 11 and earlier)
         for clipslot in miditrack.findall('.//MainSequencer/ClipSlotList/ClipSlot'):
             for clip_value in clipslot.findall('.//ClipSlot/Value/MidiClip'):
                 clips_to_process.append(clip_value)
@@ -224,11 +233,18 @@ def convert_ableton_to_midi(input_file, output_file=None):
                             tim = safe_float(notes.attrib.get('Time')) + float(toffset)
                             dur = safe_float(notes.attrib.get('Duration'))
                             vel = safe_int(notes.attrib.get('Velocity'))
+                            
                             # Validate MIDI values are in proper range
-                            if 0 <= keyt <= 127 and 0 <= vel <= 127 and dur > 0:
+                            # Duration must be > 0.001 (minimum 1ms), time must be >= 0
+                            # Key must be 0-127, velocity must be 1-127 (0 is note off)
+                            if (0 <= keyt <= 127 and 
+                                1 <= vel <= 127 and 
+                                dur > 0.001 and 
+                                tim >= 0):
                                 my_midi.addNote(track, channel, keyt, tim, dur, vel)
-                            else:
-                                print(f'\t\tSkipped invalid note: key={keyt}, vel={vel}, dur={dur}')
+                            # Only log if the note seems intentional (not a zero-duration artifact)
+                            elif dur > 0 or vel > 0:
+                                print(f'\t\tSkipped invalid note: key={keyt}, vel={vel}, dur={dur}, time={tim}')
                 
                 # Get automation data
                 for envelopes in midiclip.findall('.//Envelopes/Envelopes'):
