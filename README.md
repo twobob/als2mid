@@ -2,7 +2,7 @@
 
 Ableton Project File to MIDI exporter
 
-**Current Version: v1.0.4** | [Download Releases](https://github.com/twobob/als2mid/releases)
+**Current Version: v1.0.5** | [Download Releases](https://github.com/twobob/als2mid/releases)
 
 Converts Ableton Live project files (.als) and zipped projects to standard MIDI files, preserving notes, automation (pitch bend, modulation, filter cutoff), and multi-track structure.
 
@@ -126,6 +126,7 @@ Sample Ableton project files are included in the `testfiles/` folder for testing
 
 ## Supported Automation
 
+### Standard MIDI Controllers
 - **Pitch Bend** (ID 16200)
 - **Modulation Wheel** (ID 16203, CC 1)
 - **Filter Cutoff** (ID 16111, CC 74)
@@ -137,7 +138,12 @@ Sample Ableton project files are included in the `testfiles/` folder for testing
 - **Reverb Send** (ID 16205, CC 91)
 - **Chorus Send** (ID 16206, CC 93)
 
-*Note: Device-specific parameters are logged but not exported as they don't have standard MIDI CC equivalents*
+### Device-Specific Parameters (New in v1.0.5!)
+Device-specific automation (VST/plugin parameters) is now automatically mapped to unused MIDI CC numbers:
+- **Safe unused CCs**: 85-87, 89-90, 102-119
+- Each unique device parameter gets a consistent CC assignment
+- Automation data is preserved but will need manual remapping in your target DAW
+- Example: Simpler filter envelope → CC 85, Operator LFO rate → CC 86, etc.
 
 ## Files
 

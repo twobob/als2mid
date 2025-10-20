@@ -285,6 +285,15 @@ def convert_ableton_to_midi(input_file, output_file=None):
                                 print(f'\t\tSkipped invalid note: key={keyt}, vel={vel}, dur={dur}, time={tim}')
                 
                 # Get automation data
+                # Track device-specific automation IDs we've seen and assign them CCs
+                device_automation_map = {}  # Maps autoid -> CC number
+                
+                # Unused CCs that are safe to use (rarely used by DAWs)
+                # Avoiding common ones: 0-31 (MSB), 32-63 (LSB), 64-69 (switches), 70-79 (common controllers)
+                SAFE_UNUSED_CCS = [85, 86, 87, 89, 90, 102, 103, 104, 105, 106, 107, 108, 109, 110, 
+                                   111, 112, 113, 114, 115, 116, 117, 118, 119]
+                next_unused_cc_index = 0
+                
                 for envelopes in midiclip.findall('.//Envelopes/Envelopes'):
                     for clipenv in envelopes:
                         # Get the automation internal ID
@@ -313,10 +322,18 @@ def convert_ableton_to_midi(input_file, output_file=None):
                             target_cc, cc_name = AUTOMATION_MAP[autoid]
                             print(f'\tFound automation: {cc_name} (CC {target_cc if target_cc != 0 else "Pitch Bend"})')
                         elif autoid != -1:
-                            # Unknown automation - try to pass through anyway
-                            # Map to CC based on ID modulo (just a fallback)
-                            print(f'\tFound unknown automation ID {autoid} - skipping')
-                            target_cc = -1
+                            # Unknown/device-specific automation - map to unused CC
+                            if autoid not in device_automation_map:
+                                if next_unused_cc_index < len(SAFE_UNUSED_CCS):
+                                    device_automation_map[autoid] = SAFE_UNUSED_CCS[next_unused_cc_index]
+                                    next_unused_cc_index += 1
+                                    target_cc = device_automation_map[autoid]
+                                    print(f'\tFound device-specific automation ID {autoid} - mapped to CC {target_cc}')
+                                else:
+                                    print(f'\tFound device-specific automation ID {autoid} - no free CCs available, skipping')
+                                    target_cc = -1
+                            else:
+                                target_cc = device_automation_map[autoid]
 
                         # Get the automation values for each envelope
                         if target_cc != -1:
