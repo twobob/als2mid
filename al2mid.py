@@ -199,10 +199,20 @@ def convert_ableton_to_midi(input_file, output_file=None):
         
         # Process all found clips
         for midiclip in clips_to_process:
-                # Raise the time offset for the next clip
-                toffset = toffset + timeoff
+                # Get the clip's position in the arranger timeline
+                # The Time attribute on MidiClip contains the arranger start position
+                clip_start_time = safe_float(midiclip.attrib.get('Time'), 0.0)
                 
-                # Get the clip length
+                # Alternative: read from CurrentStart element if Time attribute is missing
+                if clip_start_time == 0.0:
+                    current_start_elem = midiclip.find('.//CurrentStart')
+                    if current_start_elem is not None:
+                        clip_start_time = safe_float(safe_get(current_start_elem, 'Value'), 0.0)
+                
+                # Use the clip's actual start time as offset
+                toffset = clip_start_time
+                
+                # Get the clip length (for reference, not used for offset anymore)
                 for loopinfo in midiclip.findall('.//Loop'):
                     le = loopinfo.find('LoopEnd')
                     timeoff = safe_float(safe_get(le, 'Value'), timeoff)
