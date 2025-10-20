@@ -188,6 +188,16 @@ def convert_ableton_to_midi(input_file, output_file=None):
         my_midi.addTempo(track=0, time=0, tempo=tempo)
         print(f'Set tempo: {tempo} BPM')
         
+        # Track device-specific automation IDs we've seen and assign them CCs
+        # This must be outside the track loop so IDs get unique CCs across all tracks
+        device_automation_map = {}  # Maps autoid -> CC number
+        
+        # Unused CCs that are safe to use (rarely used by DAWs)
+        # Avoiding common ones: 0-31 (MSB), 32-63 (LSB), 64-69 (switches), 70-79 (common controllers)
+        SAFE_UNUSED_CCS = [85, 86, 87, 89, 90, 102, 103, 104, 105, 106, 107, 108, 109, 110, 
+                           111, 112, 113, 114, 115, 116, 117, 118, 119]
+        next_unused_cc_index = 0
+        
         # Process MIDI tracks for this file
         # In format 1: track 0 = tempo track (automatic), user tracks start at index 0
         for global_track_idx in range(start_track, end_track):
@@ -285,15 +295,6 @@ def convert_ableton_to_midi(input_file, output_file=None):
                                 print(f'\t\tSkipped invalid note: key={keyt}, vel={vel}, dur={dur}, time={tim}')
                 
                 # Get automation data
-                # Track device-specific automation IDs we've seen and assign them CCs
-                device_automation_map = {}  # Maps autoid -> CC number
-                
-                # Unused CCs that are safe to use (rarely used by DAWs)
-                # Avoiding common ones: 0-31 (MSB), 32-63 (LSB), 64-69 (switches), 70-79 (common controllers)
-                SAFE_UNUSED_CCS = [85, 86, 87, 89, 90, 102, 103, 104, 105, 106, 107, 108, 109, 110, 
-                                   111, 112, 113, 114, 115, 116, 117, 118, 119]
-                next_unused_cc_index = 0
-                
                 for envelopes in midiclip.findall('.//Envelopes/Envelopes'):
                     for clipenv in envelopes:
                         # Get the automation internal ID
