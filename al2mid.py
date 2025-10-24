@@ -399,22 +399,161 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  python alsConsole.py myproject.als
-  python alsConsole.py myproject.zip -o output.mid
-  python alsConsole.py myproject.als --output custom_name.mid
+  Single file:
+    python al2mid.py myproject.als
+    python al2mid.py myproject.zip -o output.mid
+  
+  Multi-file (batch):
+    python al2mid.py /path/to/folder --batch
+    python al2mid.py /path/to/folder --batch --recursive
+    python al2mid.py /path/to/folder --batch --logs
         """
     )
     
-    parser.add_argument('input', help='Input file (.als or .zip)')
-    parser.add_argument('-o', '--output', help='Output MIDI file (optional, auto-generated if not specified)')
+    parser.add_argument('input', help='Input file (.als or .zip) or folder path (with --batch)')
+    parser.add_argument('-o', '--output', help='Output MIDI file (single file mode only)')
+    parser.add_argument('--batch', action='store_true', help='Batch mode: convert all .als files in folder')
+    parser.add_argument('--recursive', action='store_true', help='Search subdirectories (batch mode only)')
+    parser.add_argument('--logs', action='store_true', help='Create .export.log for each file (batch mode only)')
     
     args = parser.parse_args()
     
     if not os.path.exists(args.input):
-        print(f"Error: Input file '{args.input}' not found")
+        print(f"Error: Input path '{args.input}' not found")
         sys.exit(1)
     
-    convert_ableton_to_midi(args.input, args.output)
+    # Batch mode
+    if args.batch:
+        if not os.path.isdir(args.input):
+            print(f"Error: Batch mode requires a folder path, got: {args.input}")
+            sys.exit(1)
+        
+        # Find all .als files
+        from pathlib import Path
+        search_pattern = "**/*.als" if args.recursive else "*.als"
+        als_files = list(Path(args.input).glob(search_pattern))
+        
+        if not als_files:
+            print(f"Error: No .als files found in: {args.input}")
+            sys.exit(1)
+        
+        # Track results
+        success_count = 0
+        failed_count = 0
+        no_midi_count = 0
+        failed_files = []
+        no_midi_files = []
+        
+        # Create master log
+        master_log_path = os.path.join(args.input, "ALS2MID.export.log")
+        with open(master_log_path, 'w', encoding='utf-8') as master_log:
+            master_log.write("=" * 60 + "\n")
+            master_log.write("ALS2MID Multi-file Conversion Log\n")
+            master_log.write(f"Folder: {args.input}\n")
+            master_log.write(f"Found {len(als_files)} .als file(s)\n")
+            master_log.write("=" * 60 + "\n\n")
+            
+            print("=" * 60)
+            print(f"Batch conversion mode")
+            print(f"Folder: {args.input}")
+            print(f"Found {len(als_files)} .als file(s)")
+            print("=" * 60)
+            
+            for idx, input_file in enumerate(als_files, 1):
+                input_file = str(input_file)
+                output_file = os.path.splitext(input_file)[0] + ".mid"
+                
+                print(f"\n[{idx}/{len(als_files)}] Processing: {os.path.basename(input_file)}")
+                
+                # Capture output for logging
+                output_lines = []
+                
+                if args.logs:
+                    log_file_path = os.path.splitext(input_file)[0] + ".export.log"
+                    log_file = open(log_file_path, 'w', encoding='utf-8')
+                else:
+                    log_file = None
+                
+                try:
+                    # Redirect output
+                    import io
+                    old_stdout = sys.stdout
+                    sys.stdout = io.StringIO()
+                    
+                    convert_ableton_to_midi(input_file, output_file)
+                    
+                    # Get captured output
+                    captured = sys.stdout.getvalue()
+                    sys.stdout = old_stdout
+                    output_lines = captured.split('\n')
+                    
+                    # Check if no MIDI
+                    if "No MIDI tracks found" in captured or "0 track(s)" in captured:
+                        no_midi_count += 1
+                        no_midi_files.append(os.path.basename(input_file))
+                        print(f"  ⚠ No MIDI: {os.path.basename(input_file)}")
+                    else:
+                        success_count += 1
+                        print(f"  ✓ Success: {os.path.basename(output_file)}")
+                    
+                    # Write to individual log
+                    if log_file:
+                        log_file.write(captured)
+                        log_file.close()
+                        print(f"  ✓ Log saved: {os.path.basename(log_file_path)}")
+                    
+                except Exception as e:
+                    sys.stdout = old_stdout
+                    failed_count += 1
+                    failed_files.append(os.path.basename(input_file))
+                    print(f"  ✗ Failed: {str(e)}")
+                    if log_file:
+                        log_file.write(f"Error: {str(e)}\n")
+                        log_file.close()
+            
+            # Print summary
+            print("\n" + "=" * 60)
+            print("✓ Multi-file conversion completed!")
+            print(f"  Successful: {success_count}")
+            if failed_count > 0:
+                print(f"  Failed:     {failed_count}")
+                for fname in failed_files:
+                    print(f"    - {fname}")
+            else:
+                print(f"  Failed:     0")
+            if no_midi_count > 0:
+                print(f"  No MIDI:    {no_midi_count}")
+                for fname in no_midi_files:
+                    print(f"    - {fname}")
+            else:
+                print(f"  No MIDI:    0")
+            print(f"  Total:      {len(als_files)}")
+            print("=" * 60)
+            print(f"\nMaster log saved: {master_log_path}")
+            
+            # Write to master log
+            master_log.write("\n" + "=" * 60 + "\n")
+            master_log.write("CONVERSION SUMMARY\n")
+            master_log.write("=" * 60 + "\n")
+            master_log.write(f"✓ Successful: {success_count}\n")
+            if failed_count > 0:
+                master_log.write(f"✗ Failed:     {failed_count}\n")
+                for fname in failed_files:
+                    master_log.write(f"    - {fname}\n")
+            else:
+                master_log.write(f"✗ Failed:     0\n")
+            if no_midi_count > 0:
+                master_log.write(f"⚠ No MIDI:    {no_midi_count}\n")
+                for fname in no_midi_files:
+                    master_log.write(f"    - {fname}\n")
+            else:
+                master_log.write(f"⚠ No MIDI:    0\n")
+            master_log.write(f"Total:        {len(als_files)}\n")
+            master_log.write("=" * 60 + "\n")
+    
+    # Single file mode
+    else:
+        convert_ableton_to_midi(args.input, args.output)
 
 
 if __name__ == '__main__':
