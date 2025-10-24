@@ -149,7 +149,7 @@ def convert_ableton_to_midi(input_file, output_file=None):
     
     if num_tracks == 0:
         print("Error: No MIDI tracks found")
-        sys.exit(1)
+        return []  # Return empty list instead of exiting
     
     # Calculate how many MIDI files we need (16 tracks per file max)
     tracks_per_file = 16
