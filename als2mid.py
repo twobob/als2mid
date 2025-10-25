@@ -147,6 +147,7 @@ def convert_ableton_to_midi(input_file, output_file=None):
             tempo = safe_int(manual.get('Value'), tempo)
     
     # Get amount of tracks to be allocated
+    num_tracks = 0
     all_midi_tracks = []
     for tracks in root.iter('Tracks'):
         found = tracks.findall('MidiTrack') or []
@@ -482,17 +483,17 @@ Examples:
                 
                 # Capture output for logging
                 output_lines = []
+                log_file_path = None
+                log_file = None
                 
                 if args.logs:
                     log_file_path = os.path.splitext(input_file)[0] + ".export.log"
                     log_file = open(log_file_path, 'w', encoding='utf-8')
-                else:
-                    log_file = None
                 
+                old_stdout = sys.stdout
                 try:
                     # Redirect output
                     import io
-                    old_stdout = sys.stdout
                     sys.stdout = io.StringIO()
                     
                     convert_ableton_to_midi(input_file, output_file)
@@ -512,7 +513,7 @@ Examples:
                         print(f"  ✓ Success: {os.path.basename(output_file)}")
                     
                     # Write to individual log
-                    if log_file:
+                    if log_file and log_file_path:
                         log_file.write(captured)
                         log_file.close()
                         print(f"  ✓ Log saved: {os.path.basename(log_file_path)}")
