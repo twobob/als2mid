@@ -29,7 +29,7 @@ Converts Ableton Live project files (.als) and zipped projects to standard MIDI 
 ## Features
 
 - Extract MIDI from .als files (both plain and gzipped formats)
-- **Supports Ableton Live 11 and 12** (including new TakeLanes structure in v12)
+- **Supports Ableton Live 11 and 12** 
 - Preserves multi-track structure by exporting to Midi 1 format
 - **Preserves clip timing from arranger timeline** - clips retain their original position
 - **Automatic multi-file output for large projects** - splits into multiple MIDI files when exceeding 16 tracks (MIDI channel limit)
