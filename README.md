@@ -268,9 +268,13 @@ Check https://github.com/MarkCWirt/MIDIUtil/blob/develop/License.txt for upstrea
 - Expanded automation support
 
 **v1.0.4** - Expanded automation support
+
 **v1.0.3** - Multi-file output for >16 tracks
+
 **v1.0.2** - Timeline position preservation
+
 **v1.0.1** - Ableton 12 TakeLanes support
+
 **v1.0.0** - Initial release
 
 ## Compatibility
