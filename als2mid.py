@@ -151,9 +151,33 @@ def convert_ableton_to_midi(input_file, output_file=None):
     all_midi_tracks = []
     for tracks in root.iter('Tracks'):
         found = tracks.findall('MidiTrack') or []
-        all_midi_tracks = list(found)
+        
+        # Filter out tracks with no MIDI notes
+        tracks_with_notes = []
+        for mt in found:
+            has_notes = False
+            # Check all possible clip locations for notes
+            for clip in mt.findall('.//MidiClip'):
+                keytracks = clip.find('.//Notes/KeyTracks')
+                if keytracks is not None:
+                    for kt in keytracks.findall('KeyTrack'):
+                        notes = kt.find('Notes')
+                        if notes is not None and len(notes.findall('MidiNoteEvent')) > 0:
+                            has_notes = True
+                            break
+                if has_notes:
+                    break
+            
+            if has_notes:
+                tracks_with_notes.append(mt)
+        
+        all_midi_tracks = tracks_with_notes
         num_tracks = len(all_midi_tracks)
-        print(f'Found {num_tracks} track(s) with {tempo} BPM')
+        total_tracks = len(found)
+        if total_tracks > num_tracks:
+            print(f'Found {total_tracks} MIDI track(s), {num_tracks} with note data ({tempo} BPM)')
+        else:
+            print(f'Found {num_tracks} track(s) with {tempo} BPM')
     
     if num_tracks == 0:
         print("Error: No MIDI tracks found")
@@ -291,16 +315,22 @@ def convert_ableton_to_midi(input_file, output_file=None):
                             dur = safe_float(notes.attrib.get('Duration'))
                             vel = safe_int(notes.attrib.get('Velocity'))
                             
+                            # Minimum note duration: 1/96th of a quarter note (0.0104166... beats)
+                            MIN_NOTE_DURATION = 1.0 / 96.0
+                            
+                            # Clamp duration to minimum if it's ridiculously short but non-zero
+                            if 0 < dur < MIN_NOTE_DURATION:
+                                dur = MIN_NOTE_DURATION
+                            
                             # Validate MIDI values are in proper range
-                            # Duration must be > 0.001 (minimum 1ms), time must be >= 0
+                            # Duration must be > 0, time must be >= 0
                             # Key must be 0-127, velocity must be 1-127 (0 is note off)
                             if (0 <= keyt <= 127 and 
                                 1 <= vel <= 127 and 
-                                dur > 0.001 and 
+                                dur > 0 and 
                                 tim >= 0):
                                 my_midi.addNote(local_track, channel, keyt, tim, dur, vel)
-                            # Only log if the note seems intentional (not a zero-duration artifact)
-                            elif dur > 0 or vel > 0:
+                            else:
                                 print(f'\t\tSkipped invalid note: key={keyt}, vel={vel}, dur={dur}, time={tim}')
                 
                 # Get automation data
@@ -431,6 +461,7 @@ Examples:
     parser.add_argument('--batch', action='store_true', help='Batch mode: convert all .als files in folder')
     parser.add_argument('--recursive', action='store_true', help='Search subdirectories (batch mode only)')
     parser.add_argument('--logs', action='store_true', help='Create .export.log for each file (batch mode only)')
+    parser.add_argument('--ignore-backups', action='store_true', help='Exclude "Backup" folders (batch mode only)')
     
     args = parser.parse_args()
     
@@ -448,6 +479,10 @@ Examples:
         from pathlib import Path
         search_pattern = "**/*.als" if args.recursive else "*.als"
         als_files = list(Path(args.input).glob(search_pattern))
+        
+        # Filter out Backup folders if requested
+        if args.ignore_backups:
+            als_files = [f for f in als_files if "Backup" not in f.parts]
         
         if not als_files:
             print(f"Error: No .als files found in: {args.input}")

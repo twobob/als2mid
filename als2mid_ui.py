@@ -115,6 +115,10 @@ class ALS2MIDGui:
         tk.Checkbutton(self.multi_frame, text="Output Logs (creates <track_name>.export.log for each file)", 
                       variable=self.output_logs_var).pack(anchor="w", padx=10, pady=5)
         
+        self.ignore_backups_var = tk.BooleanVar(value=True)
+        tk.Checkbutton(self.multi_frame, text="Ignore Backup folders", 
+                      variable=self.ignore_backups_var).pack(anchor="w", padx=10, pady=5)
+        
         # Convert button
         self.convert_btn_multi = tk.Button(self.multi_frame, text="Convert All Files", command=self.convert_multi, 
                                      bg="#4CAF50", fg="white", font=("Arial", 12, "bold"),
@@ -301,6 +305,10 @@ class ALS2MIDGui:
         # Find all .als files
         search_pattern = "**/*.als" if self.search_subdirs_var.get() else "*.als"
         als_files = list(Path(folder).glob(search_pattern))
+        
+        # Filter out Backup folders if requested
+        if self.ignore_backups_var.get():
+            als_files = [f for f in als_files if "Backup" not in f.parts]
         
         if not als_files:
             messagebox.showerror("Error", f"No .als files found in:\n{folder}")
