@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 # Test script to verify multi-file output for >16 tracks
 
-import al2mid
+import sys
 import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+import als2mid
 
 # Create a mock test - we'll just verify the logic manually
 print("Testing split logic:")

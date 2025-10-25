@@ -4,11 +4,14 @@ Test script to process v12.xml directly for testing XML structure
 """
 
 import xml.etree.ElementTree as ET
+import os
 
 def test_v12_structure():
     """Test that we can find clips in the v12 XML structure"""
     
-    tree = ET.parse('testfiles/v12.xml')
+    # Reference testfiles from parent directory
+    testfile_path = os.path.join(os.path.dirname(__file__), '..', 'testfiles', 'v12.xml')
+    tree = ET.parse(testfile_path)
     root = tree.getroot()
     
     print("Testing Ableton 12 XML structure...")

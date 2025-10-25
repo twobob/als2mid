@@ -13,7 +13,7 @@ import threading
 import glob
 
 # Import the converter function from the main script
-from al2mid import convert_ableton_to_midi
+from als2mid import convert_ableton_to_midi, is_no_midi_output
 
 
 class ALS2MIDGui:
@@ -53,10 +53,7 @@ class ALS2MIDGui:
         # Start in single mode
         self.switch_mode("single")
     
-    def build_single_mode_ui(self):
-        """Build the UI for single file mode"""
-        # Input file
-        tk.Label(self.single_frame, text="Input File (.als or .zip):", font=("Arial", 10, "bold")).pack(pady=(10, 5), anchor="w", padx=10)
+       
     def build_single_mode_ui(self):
         """Build the UI for single file mode"""
         # Input file
@@ -398,7 +395,7 @@ class ALS2MIDGui:
                         
                         # Check if "No MIDI tracks found" appears in output
                         output_text = ' '.join(output_buffer)
-                        if "No MIDI tracks found" in output_text or "0 track(s)" in output_text:
+                        if is_no_midi_output(output_text):
                             no_midi_count += 1
                             no_midi_files.append(os.path.basename(input_file))
                             self.log(f"  ⚠ No MIDI: {os.path.basename(input_file)}")

@@ -2,7 +2,7 @@
 
 Ableton Project File to MIDI exporter
 
-**Current Version: v1.0.6** | [Download Releases](https://github.com/twobob/als2mid/releases)
+**Current Version: v1.1.0** | [Download Releases](https://github.com/twobob/als2mid/releases)
 
 Converts Ableton Live project files (.als) and zipped projects to standard MIDI files, preserving notes, automation (pitch bend, modulation, filter cutoff), and multi-track structure. Now with batch conversion mode.
 
@@ -37,7 +37,7 @@ Converts Ableton Live project files (.als) and zipped projects to standard MIDI 
 - Handles automation data (pitch bend, modulation, cutoff, device-specific parameters)
 - Processes both session clips and arranger timeline clips
 - Support for zipped Ableton projects
-- Pre-compiled versison available for Windows
+- Pre-compiled version available for Windows
 - Cross-platform python version (Windows, macOS, Linux)
 - **Batch conversion mode** - process entire folders of .als files at once
 - **Recursive folder search** - find and convert projects in subdirectories
@@ -116,35 +116,35 @@ The GUI provides:
 
 Convert an Ableton project file (creates `myproject.mid` in same directory):
 ```bash
-python al2mid.py myproject.als
+python als2mid.py myproject.als
 ```
 
 Convert a zipped Ableton project:
 ```bash
-python al2mid.py myproject.zip
+python als2mid.py myproject.zip
 ```
 
 Specify output file:
 ```bash
-python al2mid.py myproject.als -o output.mid
-python al2mid.py myproject.als --output custom_name.mid
+python als2mid.py myproject.als -o output.mid
+python als2mid.py myproject.als --output custom_name.mid
 ```
 
 **Batch Mode:**
 
 Convert all .als files in a folder:
 ```bash
-python al2mid.py /path/to/folder --batch
+python als2mid.py /path/to/folder --batch
 ```
 
 Recursively search subdirectories:
 ```bash
-python al2mid.py /path/to/folder --batch --recursive
+python als2mid.py /path/to/folder --batch --recursive
 ```
 
 Create individual log files for each conversion:
 ```bash
-python al2mid.py /path/to/folder --batch --logs
+python als2mid.py /path/to/folder --batch --logs
 ```
 
 ### Command Line Arguments
@@ -164,25 +164,25 @@ python al2mid.py /path/to/folder --batch --logs
 **Single File:**
 ```bash
 # Convert .als file (output: myproject.mid)
-python al2mid.py myproject.als
+python als2mid.py myproject.als
 
 # Convert zipped project with custom output name
-python al2mid.py myproject.zip -o final_mix.mid
+python als2mid.py myproject.zip -o final_mix.mid
 
 # Convert gzipped .als file
-python al2mid.py gadget_project.als
+python als2mid.py gadget_project.als
 ```
 
 **Batch Processing:**
 ```bash
 # Convert all .als files in current folder
-python al2mid.py . --batch
+python als2mid.py . --batch
 
 # Convert all .als files recursively
-python al2mid.py /path/to/projects --batch --recursive
+python als2mid.py /path/to/projects --batch --recursive
 
 # With individual logs for each file
-python al2mid.py /path/to/projects --batch --recursive --logs
+python als2mid.py /path/to/projects --batch --recursive --logs
 ```
 
 ## Batch Mode Output
@@ -229,7 +229,7 @@ Device-specific automation (VST/plugin parameters) is automatically mapped to un
 
 ## Files
 
-- `al2mid.py` - Main converter script (cross-platform, command-line, batch mode)
+- `als2mid.py` - Main converter script (cross-platform, command-line, batch mode)
 - `als2mid_ui.py` - GUI wrapper with single/multi-file modes (requires tkinter)
 - `midiutil_v1_2_1.py` - Bundled MIDI utility library
 - `testfiles/` - Sample Ableton project files for testing
@@ -246,6 +246,15 @@ Open Source mangling by twobob
 Check https://github.com/MarkCWirt/MIDIUtil/blob/develop/License.txt for upstream concerns
 
 ## Version History
+
+**v1.1.0** - Project cleanup and refinement (First stable release)
+- Fixed batch mode "No MIDI" detection bug (was matching "track 0" in output)
+- Renamed al2mid.py to als2mid.py for consistency
+- Moved development test files to dev/ subfolder
+- Centralised no-MIDI detection logic with constants and helper function
+- Dynamic help text (shows correct executable name for compiled vs Python versions)
+- Improved code organisation and maintainability
+- First "out of alpha" release
 
 **v1.0.6** - Multi-file batch conversion mode
 - Added batch processing for folders of .als files

@@ -1,6 +1,9 @@
 import xml.etree.ElementTree as ET
+import os
 
-tree = ET.parse('testfiles/v12.xml')
+# Reference testfiles from parent directory
+testfile_path = os.path.join(os.path.dirname(__file__), '..', 'testfiles', 'v12.xml')
+tree = ET.parse(testfile_path)
 root = tree.getroot()
 
 clips = root.findall('.//MidiClip')[:10]

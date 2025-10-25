@@ -21,6 +21,13 @@ import argparse
 # Import MIDIUtil 
 from midiutil_v1_2_1 import TICKSPERQUARTERNOTE, MIDIFile
 
+# Constants for detecting no-MIDI conversions
+NO_MIDI_ERROR_STRINGS = ["No MIDI tracks found", "Found 0 track(s)"]
+
+def is_no_midi_output(output_text):
+    """Check if conversion output indicates no MIDI tracks were found."""
+    return any(error_string in output_text for error_string in NO_MIDI_ERROR_STRINGS)
+
 def convert_ableton_to_midi(input_file, output_file=None):
     """
     Convert Ableton Live Set (.als) or zipped project to MIDI file
@@ -394,19 +401,27 @@ def convert_ableton_to_midi(input_file, output_file=None):
 
 
 def main():
+    # Detect if running as compiled executable or Python script
+    if getattr(sys, 'frozen', False):
+        # Running as compiled executable
+        prog_name = os.path.basename(sys.executable)
+    else:
+        # Running as Python script
+        prog_name = f"python {os.path.basename(__file__)}"
+    
     parser = argparse.ArgumentParser(
         description='Convert Ableton Live Set (.als) or zipped project to MIDI file',
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
+        epilog=f"""
 Examples:
   Single file:
-    python al2mid.py myproject.als
-    python al2mid.py myproject.zip -o output.mid
+    {prog_name} myproject.als
+    {prog_name} myproject.zip -o output.mid
   
   Multi-file (batch):
-    python al2mid.py /path/to/folder --batch
-    python al2mid.py /path/to/folder --batch --recursive
-    python al2mid.py /path/to/folder --batch --logs
+    {prog_name} /path/to/folder --batch
+    {prog_name} /path/to/folder --batch --recursive
+    {prog_name} /path/to/folder --batch --logs
         """
     )
     
@@ -488,7 +503,7 @@ Examples:
                     output_lines = captured.split('\n')
                     
                     # Check if no MIDI
-                    if "No MIDI tracks found" in captured or "0 track(s)" in captured:
+                    if is_no_midi_output(captured):
                         no_midi_count += 1
                         no_midi_files.append(os.path.basename(input_file))
                         print(f"  ⚠ No MIDI: {os.path.basename(input_file)}")
