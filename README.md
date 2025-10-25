@@ -4,9 +4,19 @@ Ableton Project File to MIDI exporter
 
 **Current Version: v1.0.6** | [Download Releases](https://github.com/twobob/als2mid/releases)
 
-Converts Ableton Live project files (.als) and zipped projects to standard MIDI files, preserving notes, automation (pitch bend, modulation, filter cutoff), and multi-track structure. Now with powerful batch conversion mode!
+Converts Ableton Live project files (.als) and zipped projects to standard MIDI files, preserving notes, automation (pitch bend, modulation, filter cutoff), and multi-track structure. Now with batch conversion mode.
 
-![ALS2MID UI](images/ScreenshotOfUI.png)
+## Single Mode
+
+<img width="600" alt="image" src="https://github.com/user-attachments/assets/94ec3d42-6239-465e-99f1-f7fcbacfeaaa" />
+
+## Multi Mode
+
+<img width="600" alt="image" src="https://github.com/user-attachments/assets/a35bb354-f681-46ad-aa13-f4506770bf82" />
+
+## Console version
+
+<img width="600" alt="image" src="https://github.com/user-attachments/assets/5e5802ef-6026-40d6-b834-1a2541961e70" />
 
 ## Download
 
@@ -20,18 +30,18 @@ Converts Ableton Live project files (.als) and zipped projects to standard MIDI 
 
 - Extract MIDI from .als files (both plain and gzipped formats)
 - **Supports Ableton Live 11 and 12** (including new TakeLanes structure in v12)
-- Support for zipped Ableton projects
-- Preserves multi-track structure
+- Preserves multi-track structure by exporting to Midi 1 format
 - **Preserves clip timing from arranger timeline** - clips retain their original position
 - **Automatic multi-file output for large projects** - splits into multiple MIDI files when exceeding 16 tracks (MIDI channel limit)
-- **Batch conversion mode** - process entire folders of .als files at once
-- **Recursive folder search** - find and convert projects in subdirectories
-- **Comprehensive logging** - individual and master summary logs for batch operations
-- **Smart categorisation** - tracks successful, failed, and no-MIDI conversions separately
 - Exports notes with velocity and duration
 - Handles automation data (pitch bend, modulation, cutoff, device-specific parameters)
 - Processes both session clips and arranger timeline clips
-- Cross-platform (Windows, macOS, Linux)
+- Support for zipped Ableton projects
+- Pre-compiled versison available for Windows
+- Cross-platform python version (Windows, macOS, Linux)
+- **Batch conversion mode** - process entire folders of .als files at once
+- **Recursive folder search** - find and convert projects in subdirectories
+- **Comprehensive logging** - individual and master summary logs for batch operations
 
 ## Requirements
 
@@ -41,7 +51,7 @@ Converts Ableton Live project files (.als) and zipped projects to standard MIDI 
 ## Installation
 
 ### Option 1: Download Pre-built Executables (Windows)
-Download from [Releases](https://github.com/twobob/als2mid/releases/latest) - no installation needed!
+Download from [Releases](https://github.com/twobob/als2mid/releases/latest) - no installation needed
 
 ### Option 2: Use Python Source (All Platforms)
 ```bash
@@ -180,8 +190,7 @@ python al2mid.py /path/to/projects --batch --recursive --logs
 When using batch mode, you'll get:
 - **Console/GUI summary** showing counts for successful, failed, and no-MIDI conversions
 - **Master log file** (`ALS2MID.export.log`) in the folder root with:
-  - Complete list of processed files
-  - Categorised results (successful, failed, no-MIDI)
+  - Complete list of processed files with categorised results (successful, failed, no-MIDI)
   - Specific filenames for failures and no-MIDI projects
 - **Individual logs** (optional, with `--logs` flag): `<filename>.export.log` for each conversion
 
