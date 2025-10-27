@@ -18,6 +18,14 @@ Converts Ableton Live project files (.als) and zipped projects to standard MIDI 
 
 <img width="600" alt="image" src="https://github.com/user-attachments/assets/5e5802ef-6026-40d6-b834-1a2541961e70" />
 
+## Windows ONLY Ableton device version (alpha)
+
+<img width="600" height="241" alt="image" src="https://github.com/user-attachments/assets/b9d28395-9933-4b7f-a39f-e802199a9bc9" />
+
+- This is still heavily in alpha if you get "Project file not found" after you have saved your project try re-opening the project you just saved using the **File** -> **Open Recent Set** option in Ableton. 
+Ableton make is really hard to find the current project files. On purpose. sigh. 
+- You should see `"Ready (prefs): <your project name>.als"` when it is ready after such a reload.  We are working on it
+
 ## Download
 
 **Windows Executables (No Python Required):**
