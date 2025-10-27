@@ -31,7 +31,7 @@ Ableton make is really hard to find the current project files. On purpose. sigh.
 **Windows Executables (No Python Required):**
 - [als2mid-console.exe](https://github.com/twobob/als2mid/releases/latest) - Command-line version with batch mode
 - [als2mid-gui.exe](https://github.com/twobob/als2mid/releases/latest) - GUI version with single/multi-file modes
-- [AbletonLiveMaxDevice_v1.1.1.zip](https://github.com/twobob/als2mid/releases/latest) - **Max for Live device** (includes .amxd + console.exe) - **REQUIRES BOTH FILES IN SAME FOLDER**
+- [AbletonLiveMaxDevice_v1.1.1.zip](https://github.com/twobob/als2mid/releases/latest) - **Max for Live device** (includes .amxd + als2mid-console.exe) - **REQUIRES BOTH FILES IN SAME FOLDER**
 
 **Or use Python source (cross-platform):**
 
