@@ -295,24 +295,16 @@ Check https://github.com/MarkCWirt/MIDIUtil/blob/develop/License.txt for upstrea
 ## Version History
 
 **v1.1.1** - Max for Live Device Release (Current)
-- **NEW: Max for Live device** for one-click MIDI export from within Ableton Live
-- **NEW: Ignore Backup folders option** in batch mode (GUI checkbox, CLI --ignore-backups flag)
-- Automatic project path detection via log file parsing (Windows)
-- Unsaved default template detection with temporal ordering checks
-- Intelligent MRU (Most Recently Used) fallback from Preferences.cfg
-- PowerShell-based robust log parsing with separate file architecture
-- Debug logging mode (disabled by default)
-- Comprehensive device documentation
-- **Package:** AbletonLiveMaxDevice_v1.1.1.zip (includes .amxd + console.exe)
-- **IMPORTANT:** Device requires als2mid-console.exe in same folder
+- **NEW: Max for Live device** for one-click All-Tracks MIDI export from within Ableton Live
+- **Ignore Backup folders option** in batch mode (GUI checkbox, CLI --ignore-backups flag)
+- Automatic project path/name detection (Windows only)
+- Unsaved default template detection
+- **Package:** AbletonLiveMaxDevice_v1.1.1.zip (includes .amxd + als2mid-console.exe)
+- **IMPORTANT:** Device requires als2mid-console.exe in same folder as the amxd file on in your PATH
 
 **v1.1.0** - Project cleanup and refinement (First stable release)
-- Fixed batch mode "No MIDI" detection bug (was matching "track 0" in output)
+- Fixed batch mode "No MIDI" detection bug 
 - Renamed al2mid.py to als2mid.py for consistency
-- Moved development test files to dev/ subfolder
-- Centralised no-MIDI detection logic with constants and helper function
-- Dynamic help text (shows correct executable name for compiled vs Python versions)
-- Improved code organisation and maintainability
 - First "out of alpha" release
 
 **v1.0.6** - Multi-file batch conversion mode
@@ -320,7 +312,6 @@ Check https://github.com/MarkCWirt/MIDIUtil/blob/develop/License.txt for upstrea
 - Recursive subdirectory search option
 - Individual and master summary logs
 - Smart categorisation (successful/failed/no-MIDI)
-- Console version feature parity with GUI
 
 **v1.0.5** - Device-specific automation mapping
 - Device parameters mapped to unused CCs (85-119)
