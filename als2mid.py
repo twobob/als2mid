@@ -9,6 +9,9 @@
 #
 # Console version - device agnostic
 
+# VERSION - Update this for each release
+__version__ = "1.1.1"
+
 import sys
 import os
 import xml.etree.ElementTree as ET
@@ -462,6 +465,7 @@ Examples:
     parser.add_argument('--recursive', action='store_true', help='Search subdirectories (batch mode only)')
     parser.add_argument('--logs', action='store_true', help='Create .export.log for each file (batch mode only)')
     parser.add_argument('--ignore-backups', action='store_true', help='Exclude "Backup" folders (batch mode only)')
+    parser.add_argument('--version', action='version', version=f'%(prog)s v{__version__}')
     
     args = parser.parse_args()
     

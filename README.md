@@ -2,9 +2,9 @@
 
 Ableton Project File to MIDI exporter
 
-**Current Version: v1.1.0** | [Download Releases](https://github.com/twobob/als2mid/releases)
+**Current Version: v1.1.1** | [Download Releases](https://github.com/twobob/als2mid/releases)
 
-Converts Ableton Live project files (.als) and zipped projects to standard MIDI files, preserving notes, automation (pitch bend, modulation, filter cutoff), and multi-track structure. Now with batch conversion mode.
+Converts Ableton Live project files (.als) and zipped projects to standard MIDI files, preserving notes, automation (pitch bend, modulation, filter cutoff), and multi-track structure. Includes batch conversion mode and Max for Live device for one-click export from within Ableton.
 
 ## Single Mode
 
@@ -23,6 +23,7 @@ Converts Ableton Live project files (.als) and zipped projects to standard MIDI 
 **Windows Executables (No Python Required):**
 - [als2mid-console.exe](https://github.com/twobob/als2mid/releases/latest) - Command-line version with batch mode
 - [als2mid-gui.exe](https://github.com/twobob/als2mid/releases/latest) - GUI version with single/multi-file modes
+- [AbletonLiveMaxDevice_v1.1.1.zip](https://github.com/twobob/als2mid/releases/latest) - **Max for Live device** (includes .amxd + console.exe) - **REQUIRES BOTH FILES IN SAME FOLDER**
 
 **Or use Python source (cross-platform):**
 
@@ -38,7 +39,9 @@ Converts Ableton Live project files (.als) and zipped projects to standard MIDI 
 - Support for zipped Ableton projects
 - **Batch conversion mode** - process entire folders of .als files at once
 - **Recursive folder search** - find and convert projects in subdirectories
+- **Ignore Backup folders** - skip Ableton's automatic backup folders in batch mode
 - **Comprehensive logging** - individual and master summary logs for batch operations
+- **Max for Live device (NEW in v1.1.1)** - one-click MIDI export directly from within Ableton Live
 
 ## Requirements
 
@@ -58,6 +61,34 @@ cd als2mid
 
 ## Usage
 
+### Max for Live Device (NEW in v1.1.1)
+
+**⚠️ CRITICAL: The .amxd file MUST be distributed with als2mid-console.exe in the SAME folder**
+
+For one-click MIDI export from within Ableton Live:
+
+1. **Download & Install:**
+   - Download `AbletonLiveMaxDevice_v1.1.1.zip` from releases
+   - Extract to a permanent location (NOT your Downloads folder)
+   - Ensure both files are in the same folder:
+     - `ALS2MID_v1.1.1.amxd`
+     - `als2mid-console.exe`
+
+2. **Use in Ableton:**
+   - Drag the .amxd file onto any MIDI track
+   - Save your project first (required)
+   - Click the "Click button to export →" button
+   - Your .mid file appears in your project folder
+
+**Features:**
+- Automatic project path detection (Windows)
+- Detects unsaved default templates and prompts to save
+- Shows export status and errors in the device
+- No need to manually find your .als file
+- Works with both saved projects and recently opened files
+
+**See [Max for Live Device Documentation](docs/README_AbletonLiveMaxDevice.md) for detailed installation and troubleshooting**
+
 ### Windows Executable Usage
 
 **GUI Version:**
@@ -71,6 +102,7 @@ cd als2mid
   - Browse for folder containing .als files
   - Optional: Enable "Search sub-directories"
   - Optional: Enable "Output Logs" for per-file .export.log files
+  - Optional: Enable "Ignore Backup folders" (enabled by default, recommended)
   - Click "Convert All Files"
   - Review summary with success/failed/no-MIDI counts
   - Check ALS2MID.export.log in folder for detailed results
@@ -88,6 +120,7 @@ Batch mode:
 als2mid-console.exe C:\path\to\folder --batch
 als2mid-console.exe C:\path\to\folder --batch --recursive
 als2mid-console.exe C:\path\to\folder --batch --logs
+als2mid-console.exe C:\path\to\folder --batch --recursive --ignore-backups
 ```
 
 ### Python Script Usage
@@ -146,6 +179,9 @@ python als2mid.py /path/to/folder --batch --logs
 
 ### Command Line Arguments
 
+**General:**
+- `--version` - Display version number and exit
+
 **Single File Mode:**
 - `input` - Input file (.als or .zip) **[required]**
 - `-o`, `--output` - Output MIDI file path (optional, defaults to input filename with .mid extension)
@@ -155,6 +191,7 @@ python als2mid.py /path/to/folder --batch --logs
 - `--batch` - Enable batch processing mode
 - `--recursive` - Search subdirectories for .als files
 - `--logs` - Create individual .export.log file for each conversion
+- `--ignore-backups` - Exclude "Backup" folders from batch processing (recommended)
 
 ## Examples
 
@@ -180,6 +217,9 @@ python als2mid.py /path/to/projects --batch --recursive
 
 # With individual logs for each file
 python als2mid.py /path/to/projects --batch --recursive --logs
+
+# Exclude Backup folders (recommended to avoid processing old versions)
+python als2mid.py /path/to/projects --batch --recursive --ignore-backups
 ```
 
 ## Batch Mode Output
@@ -230,6 +270,8 @@ Device-specific automation (VST/plugin parameters) is automatically mapped to un
 - `als2mid_ui.py` - GUI wrapper with single/multi-file modes (requires tkinter)
 - `midiutil_v1_2_1.py` - Bundled MIDI utility library
 - `testfiles/` - Sample Ableton project files for testing
+- `dev/max4liveDev Project/` - Max for Live device development files
+- `docs/README_AbletonLiveMaxDevice.md` - Max for Live device documentation
 
 ## Credits
 
@@ -243,6 +285,18 @@ Open Source mangling by twobob
 Check https://github.com/MarkCWirt/MIDIUtil/blob/develop/License.txt for upstream concerns
 
 ## Version History
+
+**v1.1.1** - Max for Live Device Release (Current)
+- **NEW: Max for Live device** for one-click MIDI export from within Ableton Live
+- **NEW: Ignore Backup folders option** in batch mode (GUI checkbox, CLI --ignore-backups flag)
+- Automatic project path detection via log file parsing (Windows)
+- Unsaved default template detection with temporal ordering checks
+- Intelligent MRU (Most Recently Used) fallback from Preferences.cfg
+- PowerShell-based robust log parsing with separate file architecture
+- Debug logging mode (disabled by default)
+- Comprehensive device documentation
+- **Package:** AbletonLiveMaxDevice_v1.1.1.zip (includes .amxd + console.exe)
+- **IMPORTANT:** Device requires als2mid-console.exe in same folder
 
 **v1.1.0** - Project cleanup and refinement (First stable release)
 - Fixed batch mode "No MIDI" detection bug (was matching "track 0" in output)

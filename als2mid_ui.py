@@ -4,6 +4,9 @@ Simple GUI wrapper for ALS2MID converter
 Provides a basic UI for selecting input files and output location
 """
 
+# VERSION - Update this for each release
+__version__ = "1.1.1"
+
 import tkinter as tk
 from tkinter import filedialog, scrolledtext, messagebox
 import os
@@ -52,6 +55,9 @@ class ALS2MIDGui:
         
         # Start in single mode
         self.switch_mode("single")
+        
+        # Log version on startup
+        self.log(f"ALS2MID v{__version__} started\n")
     
        
     def build_single_mode_ui(self):
