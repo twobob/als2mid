@@ -330,5 +330,6 @@ Check https://github.com/MarkCWirt/MIDIUtil/blob/develop/License.txt for upstrea
 ## Compatibility
 
 Tested with Ableton Live 11 and 12
-- **Ableton 11**: Full support for all clip structures
-- **Ableton 12**: Full support including new TakeLanes architecture
+- **Ableton 11**: Supported
+- **Ableton 12**: Supported
+- **Ableton 10**: Not tested, maybe Supported?
